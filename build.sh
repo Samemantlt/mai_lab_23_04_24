@@ -1,0 +1,1 @@
+gcc -g main.c list.c list.h
