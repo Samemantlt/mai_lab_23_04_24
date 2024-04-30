@@ -1,11 +1,12 @@
 #include "list.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 void printList(tList *list)
 {
     printf("List: ");
     tListIterator iter = ListIterator_Create(list);
-    if (iter.node == BARRIER_PTR)
+    if (iter.node == getBarrier())
     {
         printf("<empty>\n");
         return;
@@ -120,7 +121,7 @@ int main()
 
             printf("Target length: ");
             scanf("%i", &targetLength);
-            
+
             printf("Value: ");
             scanf("%ui", &element);
 

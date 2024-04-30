@@ -2,15 +2,17 @@
 #define LIST_H
 
 #define ELEMENT_TYPE unsigned int
-#define BARRIER_PTR NULL
+// #define BARRIER_PTR NULL
 
 #include "stdbool.h"
+
 
 struct ListNode {
     ELEMENT_TYPE element;
     struct ListNode *previous;
     struct ListNode *next;
 };
+
 
 struct List {
     struct ListNode* first;
@@ -50,5 +52,8 @@ void ListIterator_Prev(tListIterator* iterator);
 bool ListIterator_HasNext(tListIterator* iterator);
 
 bool ListIterator_HasPrev(tListIterator* iterator);
+
+tListNode* getBarrier();
+
 
 #endif

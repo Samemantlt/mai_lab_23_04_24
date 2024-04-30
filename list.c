@@ -6,8 +6,8 @@ tListNode *ListNode_Create(ELEMENT_TYPE element)
     tListNode *node = malloc(sizeof(tListNode));
 
     node->element = element;
-    node->previous = BARRIER_PTR;
-    node->next = BARRIER_PTR;
+    node->previous = getBarrier();
+    node->next = getBarrier();
 
     return node;
 }
@@ -17,10 +17,10 @@ void ListNode_Free(tListNode *node)
     tListNode *prev = node->previous;
     tListNode *next = node->next;
 
-    if (prev != BARRIER_PTR)
+    if (prev != getBarrier())
         prev->next = next;
 
-    if (next != BARRIER_PTR)
+    if (next != getBarrier())
         next->previous = prev;
 
     free(node);
@@ -29,21 +29,21 @@ void ListNode_Free(tListNode *node)
 tList *List_Create()
 {
     tList *list = malloc(sizeof(tList));
-    list->first = BARRIER_PTR;
+    list->first = getBarrier();
     return list;
 }
 
 void List_Append(tList *list, ELEMENT_TYPE element)
 {
     tListNode *newNode = ListNode_Create(element);
-    if (list->first == BARRIER_PTR)
+    if (list->first == getBarrier())
     {
         list->first = newNode;
         return;
     }
 
     tListNode *after = list->first;
-    while (after->next != BARRIER_PTR)
+    while (after->next != getBarrier())
         after = after->next;
 
     after->next = newNode;
@@ -52,7 +52,7 @@ void List_Append(tList *list, ELEMENT_TYPE element)
 
 void List_Free(tList *list)
 {
-    while (list->first != BARRIER_PTR)
+    while (list->first != getBarrier())
     {
         tListNode *next = list->first->next;
         ListNode_Free(list->first);
@@ -67,7 +67,7 @@ tListNode *List_Insert(tList *list, ELEMENT_TYPE element, int index)
     if (index == 0)
     {
         newNode->next = list->first;
-        if (list->first != BARRIER_PTR)
+        if (list->first != getBarrier())
             list->first->previous = newNode;
         list->first = newNode;
         return newNode;
@@ -88,13 +88,13 @@ tListNode *List_Insert(tList *list, ELEMENT_TYPE element, int index)
     newNode->next = after->next;
     after->next = newNode;
 
-    if (newNode->next != BARRIER_PTR)
+    if (newNode->next != getBarrier())
         newNode->next->previous = newNode;
 
     return newNode;
 }
 
-void List_RemoveAt(tList* list, int index)
+void List_RemoveAt(tList *list, int index)
 {
     tListIterator iter = ListIterator_Create(list);
 
@@ -108,7 +108,8 @@ void List_RemoveAt(tList* list, int index)
     if (current != index)
         return;
 
-    if (iter.node == list->first) {
+    if (iter.node == list->first)
+    {
         list->first = iter.node->next;
     }
 
@@ -117,7 +118,7 @@ void List_RemoveAt(tList* list, int index)
 
 int List_Length(tList *list)
 {
-    if (list->first == BARRIER_PTR)
+    if (list->first == getBarrier())
         return 0;
 
     tListIterator iter = ListIterator_Create(list);
@@ -153,10 +154,20 @@ void ListIterator_Prev(tListIterator *iterator)
 
 bool ListIterator_HasNext(tListIterator *iterator)
 {
-    return iterator->node != BARRIER_PTR && iterator->node->next != BARRIER_PTR;
+    return iterator->node != getBarrier() && iterator->node->next != getBarrier();
 }
 
 bool ListIterator_HasPrev(tListIterator *iterator)
 {
-    return iterator->node != BARRIER_PTR && iterator->node->previous != BARRIER_PTR;
+    return iterator->node != getBarrier() && iterator->node->previous != getBarrier();
+}
+
+tListNode *getBarrier()
+{
+    static tListNode *BARRIER_PTR;
+    if (BARRIER_PTR == NULL)
+    {
+        BARRIER_PTR = malloc(sizeof(tListNode));
+    }
+    return BARRIER_PTR;
 }
